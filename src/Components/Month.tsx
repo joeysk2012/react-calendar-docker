@@ -4,7 +4,6 @@ import * as moment from 'moment';
 
 
 interface Props {
-  days: number;
   name: string;
   year : number;
 }
@@ -15,8 +14,7 @@ interface State {
 
 class Month extends React.Component<Props, State> {
   public static defaultProps: Partial<Props> = {
-    days: 30,
-    name: "",
+    name: "January",
     year: 2018 
     };
 
@@ -25,49 +23,48 @@ class Month extends React.Component<Props, State> {
   };
 
   componentDidUpdate?(){
-    //1. determine the first day of the month
-    //2. create a week from it
-    //3. determine the second week of the month and create a week from it...etc
-    //4. a week should be an array of day componenets and month should be an array of weeks
-    //5. map over the arrays in render creating elements.
+  
     
+  }
+  chunk(month: any){
+    let split_month = [];
+    let adder = 0;
+    for(let i = 0 ; i < month.length/7; i++){
+      let week = [];
+      week = month.slice(0 + adder,7 + adder) 
+      split_month.push(week);
+      adder += 7;
+    }
+    return split_month;
   }
 
   render() {
-    let month_num = moment().month("March").format("M")
-    let year_num = 2018
-    let time = moment(month_num + " " + year_num, "MM YYYY")
-    let month = []
-    let week = []
-    let weekday_number = 0;
-    let end_of_month = false;
+    let month_num = moment().month(this.props.name).format("M");
+    let year_num = this.props.year;
+    let month = [];
 
-    while(weekday_number != 6 && !end_of_month){
-      let week_count = 1
-      let week_map = {1 : 0, 2 : 7, 3 : 14, 4 : 21, 5: 28, 6 : 35} 
-      for(let i = week_map[week_count] ; i < (7 * week_count) ; i++ ){
-        time = moment(month_num + " " + year_num, "MM, YYYY").day(i)
-        week.push(time)
-      }
-      month.push(week)
-      console.log(month)
-      //if you have reached the end of the month and the weekday number is 6 then stop.
-      weekday_number = week[6].weekday();
-      if(week[6].date() == time.endOf('month').date()){
-        end_of_month = true;
+    for(let i = 0 ; i < 45 ; i++){
+      month.push(moment(month_num + " " + year_num, "MM YYYY").day(i));
+      if((month.length >= 28) 
+        && (moment(month_num + " " + year_num, "MM YYYY").day(i).day() == 6)){
+        break;
       }
     }
+    month = this.chunk(month);
 
-    let listItems = month.map(week => <tr>{week.map(day => <td>{day}</td>)}</tr>)
-    let days_of_week = moment.weekdays()
-    let daysItems = days_of_week.map(day => <th>{day}</th>)
+    let days_of_week = moment.weekdays();
+    let daysItems = days_of_week.map(day => <th>{day}</th>);
+    let listItems = month.map(week => <tr>{week.map((date :any)  => <td id="day">{date.date()}</td>)}</tr>);
     return (
-      <table>
-      <tr>
-      {daysItems}
-      </tr>
-        {listItems}
-      </table>
+      <div>
+        <h1>{this.props.name + " " + this.props.year}</h1>
+        <table>
+          <tr>
+          {daysItems}
+          </tr>
+            {listItems}
+        </table>
+      </div>
     );
   }
 }
