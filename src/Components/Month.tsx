@@ -6,6 +6,8 @@ import * as moment from 'moment';
 interface Props {
   name: string;
   year : number;
+  onWeekChange : Function;
+  items : object[]
 }
 
 interface State {
@@ -23,9 +25,14 @@ class Month extends React.Component<Props, State> {
   };
 
   componentDidUpdate?(){
+
   
-    
   }
+
+  handleWeekView(week: object[]){
+    this.props.onWeekChange(week);
+  }
+
   chunk(month: any){
     let split_month = [];
     let adder = 0;
@@ -53,8 +60,8 @@ class Month extends React.Component<Props, State> {
     month = this.chunk(month);
 
     let days_of_week = moment.weekdays();
-    let daysItems = days_of_week.map(day => <th>{day}</th>);
-    let listItems = month.map(week => <tr>{week.map((date :any)  => <td id="day">{date.date()}</td>)}</tr>);
+    let daysItems = days_of_week.map((day,index) => <th key={index}>{day}</th>);
+    let listItems = month.map((week :object[], index :number, onDoubleClick :any) => <tr key={index} onDoubleClick = {() => this.handleWeekView(week)}>{week.map((date :any, index :number)  => <td key= {index} id="day">{date.date()}</td>)}</tr>);
     return (
       <div>
         <h1>{this.props.name + " " + this.props.year}</h1>
