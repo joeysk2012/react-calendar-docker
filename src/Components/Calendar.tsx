@@ -8,9 +8,9 @@ interface State {
   month: string;
   date: string;
   year: number;
-  week : any;
+  week : object[];
   weekMode: boolean;
-  items: object[];
+  entries: object[];
 }
 
 class Calendar extends React.Component {
@@ -21,7 +21,7 @@ class Calendar extends React.Component {
       year : 2018,
       week : [],
       weekMode : false,
-      items: [[moment("01-12-2018", "MM-DD-YYYY"), "Meeting 1 3pm"]]
+      entries: [[moment("01-12-2018", "MM-DD-YYYY"), "Meeting 1 3pm"], [moment("03-13-2018", "MM-DD-YYYY"), "Meeting 2 5pm"]]
     };
 
 
@@ -31,6 +31,11 @@ class Calendar extends React.Component {
 
     handleBack(){
       this.setState({weekMode : false})
+    }
+    handleEventChange(date: any, val: string){
+      let current = this.state.entries
+      let next = current.push([date,val])
+      this.setState({entries : next})
     }
 
     handleNext(){
@@ -53,9 +58,16 @@ class Calendar extends React.Component {
   
     public render() {
       let component = this.state.weekMode == false ? 
-        <Month name={this.state.month} year = {this.state.year} onWeekChange = {this.handleWeekChange.bind(this)} items = {this.state.items} /> : <Week days = {this.state.week} />
+        <Month name={this.state.month} year = {this.state.year} onWeekChange = {this.handleWeekChange.bind(this)} entries = {this.state.entries} /> : <Week days = {this.state.week} entries = {this.state.entries} onEventChange = {this.handleEventChange.bind(this)} />
       let buttons = this.state.weekMode == false ?
-        <div><button id = "prev" onClick = {this.handlePrev.bind(this)}>Prev</button><button id = "next" onClick = {this.handleNext.bind(this)} >Next</button></div> : <button id="back" onClick = {this.handleBack.bind(this)}>Month View</button>
+        <div>
+            <button id = "prev" onClick = {this.handlePrev.bind(this)}>Prev</button>
+            <button id = "next" onClick = {this.handleNext.bind(this)} >Next</button>
+        </div> :
+        <div>
+          <button id="back" onClick = {this.handleBack.bind(this)}>Month View</button>
+          <div id="add-form"></div>
+        </div>  
       return (
         <div>
           {buttons}

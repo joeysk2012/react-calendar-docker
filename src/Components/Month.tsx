@@ -7,7 +7,7 @@ interface Props {
   name: string;
   year : number;
   onWeekChange : Function;
-  items : object[]
+  entries : object[]
 }
 
 interface State {
@@ -24,9 +24,34 @@ class Month extends React.Component<Props, State> {
     rand: 0,
   };
 
-  componentDidUpdate?(){
+  componentDidMount?(){
+    this.showEntries(this.props.entries)
+  }
 
+  componentDidUpdate?(){
+    this.showEntries(this.props.entries)
+  }
   
+  /* compare all entries with all days of the month, if they are equal then add a count of notes to it */
+  showEntries(entries: object[]){
+    entries = this.props.entries;
+  
+      for(let i = 0 ; i < 35 ; i++){
+        if(!document.getElementById(i.toString())){
+          break;
+        }
+        let count = 0;
+        for(let j = 0 ; j < entries.length ; j++){
+          if(entries[j][0].date().toString() === document.getElementById(i.toString()).innerHTML.slice(0,2) && this.props.name === entries[j][0].format('MMMM')){
+            count += 1
+          }
+        }
+        if(count > 0){
+          let curr = document.getElementById(i.toString()).innerHTML
+          document.getElementById(i.toString()).innerHTML = curr + " e: " + count
+          document.getElementById(i.toString()).className = "flag"
+        }
+      }
   }
 
   handleWeekView(week: object[]){
@@ -58,18 +83,29 @@ class Month extends React.Component<Props, State> {
       }
     }
     month = this.chunk(month);
-
     let days_of_week = moment.weekdays();
     let daysItems = days_of_week.map((day,index) => <th key={index}>{day}</th>);
-    let listItems = month.map((week :object[], index :number, onDoubleClick :any) => <tr key={index} onDoubleClick = {() => this.handleWeekView(week)}>{week.map((date :any, index :number)  => <td key= {index} id="day">{date.date()}</td>)}</tr>);
+    let ids = 0;
+    let listItems = month.map((week :object[], index :number, onDoubleClick :any) => 
+      <tr key={index} onDoubleClick = {() => this.handleWeekView(week)}>
+        {week.map((date :any, index :number)  => 
+          <td key= {index} id={(ids++).toString()}>
+            {date.date()}
+          </td>)}
+      </tr>);
+    
     return (
       <div>
         <h1>{this.props.name + " " + this.props.year}</h1>
-        <table>
-          <tr>
-          {daysItems}
-          </tr>
+        <table id="month">
+          <thead>
+            <tr>
+              {daysItems}
+            </tr>
+          </thead>
+          <tbody>
             {listItems}
+          </tbody>
         </table>
       </div>
     );
