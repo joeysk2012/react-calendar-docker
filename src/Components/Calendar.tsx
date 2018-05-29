@@ -32,10 +32,12 @@ class Calendar extends React.Component {
     handleBack(){
       this.setState({weekMode : false})
     }
+
     handleEventChange(date: any, val: string){
       let current = this.state.entries
-      let next = current.push([date,val])
-      this.setState({entries : next})
+      let entry = [date,val]
+      current.push(entry)
+      this.setState({entries : current})
     }
 
     handleNext(){

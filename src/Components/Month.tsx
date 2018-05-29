@@ -97,6 +97,7 @@ class Month extends React.Component<Props, State> {
     return (
       <div>
         <h1>{this.props.name + " " + this.props.year}</h1>
+        <p>Double click a date to switch to week mode:</p>
         <table id="month">
           <thead>
             <tr>

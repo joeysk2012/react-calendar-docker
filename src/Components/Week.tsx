@@ -1,6 +1,7 @@
 
 import * as React from 'react';
 import * as moment from 'moment';
+import './Week.css';
 
 
 interface Props {
@@ -10,8 +11,9 @@ interface Props {
 }
 
 interface State {
-  addMode: boolean,
+  addMode: boolean;
   addDate: any;
+  addText: string;
 }
 
 
@@ -22,33 +24,35 @@ class Week extends React.Component<Props, State> {
 
   public state: State = {
     addMode: false,
-    addDate: ""
+    addDate: "",
+    addText: ""
   };
 
   componentDidMount?(){
     this.showEntries(this.props.entries)
   }
 
-  componentDidUpdate?(){
-    this.showEntries(this.props.entries)
-  }
-
   showEntries(entries: any){
     entries = this.props.entries;
     let days = this.props.days;
-  
+
+    //clear out current entries so you don't double add
+    for(let i = 0 ; i < 7 ; i++){
+      let curr = document.getElementById(i.toString()).innerHTML.slice(0,2);
+      document.getElementById(i.toString()).innerHTML = curr
+    }
+      
       for(let i = 0 ; i < 7 ; i++){
-        let count = 0;
           for(let j = 0 ; j < entries.length ; j++){
             if(days[i].date() === entries[j][0].date() && days[i].month() === entries[j][0].month()){
-              count += 1
+              let curr = document.getElementById(i.toString()).innerHTML;
+              document.getElementById(i.toString()).innerHTML = curr + " \n " +entries[j][1];
+              document.getElementById(i.toString()).className = "flag-week";
             }
           }
-          if(count > 0){
-            let curr = document.getElementById(i.toString()).innerHTML;
-            document.getElementById(i.toString()).innerHTML = curr + " e: " + count;
-            document.getElementById(i.toString()).className = "flag";
-          }
+          
+            
+
       }
   }
 
@@ -57,9 +61,16 @@ class Week extends React.Component<Props, State> {
     this.setState({addMode : true, addDate : day})
   }
 
-  handleAddSubmit(){
-    let val = document.getElementById("event").innerHTML
-    this.props.onEventChange(this.state.addDate, val)
+  handleChange(e :any){
+    console.log(e.target.value)
+    e.preventDefault()
+    this.setState({addText : e.target.value})
+  }
+
+  handleEventChange(e :any){
+    e.preventDefault()
+    this.props.onEventChange(this.state.addDate, this.state.addText)
+    this.showEntries(this.props.entries)
   }
 
 
@@ -67,20 +78,19 @@ class Week extends React.Component<Props, State> {
     let weekday = moment.weekdays();
     let tableHeaders = weekday.map((day: any, index: number) => <th key={index}>{day}</th>)
     let days = this.props.days
-    console.log(days)
     let tableItems = days.map((day: any, index: number, onDoubleClick: any) => <td key={index} id={index.toString()} onDoubleClick = {() => this.handleAdd(day)}>{day.date()}</td>)
     let formItem;
     this.state.addMode ?       
     formItem = 
     <form>
-    <div id= "event-date">Adding Event for:   {this.state.addDate.format("MM-DD-YYYY")}</div>
-    <label>
-    Event Description:
-    <input id="event" type="text" name="event" />
-    </label>
-    <input id="event-submit" type="submit" value="Submit" onClick={this.handleAddSubmit.bind(this)}/>
+      <div id= "event-date">Adding Event for:   {this.state.addDate.format("MM-DD-YYYY")}</div>
+      <label>
+        Event Description:
+        <input id="event-text" type="text" name="event" onChange = {(e) => this.handleChange(e)} />
+      </label>
+      <input id="event-submit" type="submit" value="Submit" onClick={(e) => this.handleEventChange(e)}/>
     </form> :
-    <div></div>
+    <form></form>
 
     return (
       <div>
