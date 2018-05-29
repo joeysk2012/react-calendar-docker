@@ -2,11 +2,11 @@
 import * as React from 'react';
 import * as moment from 'moment';
 import './Week.css';
-
+/*Week controls week view and adding of events*/
 
 interface Props {
   days: any;
-  entries: object[];
+  entries: any;
   onEventChange: any;
 }
 
@@ -32,6 +32,10 @@ class Week extends React.Component<Props, State> {
     this.showEntries(this.props.entries)
   }
 
+  componentDidUpdate?(){
+    this.showEntries(this.props.entries)
+  }
+
   showEntries(entries: any){
     entries = this.props.entries;
     let days = this.props.days;
@@ -40,37 +44,37 @@ class Week extends React.Component<Props, State> {
     for(let i = 0 ; i < 7 ; i++){
       let curr = document.getElementById(i.toString()).innerHTML.slice(0,2);
       document.getElementById(i.toString()).innerHTML = curr
+      document.getElementById(i.toString()).classList.remove("flag");
     }
       
       for(let i = 0 ; i < 7 ; i++){
           for(let j = 0 ; j < entries.length ; j++){
-            if(days[i].date() === entries[j][0].date() && days[i].month() === entries[j][0].month()){
+            if((days[i].date().toString() === entries[j][0].date().toString()) && (days[i].month().toString() === entries[j][0].month().toString())){
+              console.log("yes")
               let curr = document.getElementById(i.toString()).innerHTML;
               document.getElementById(i.toString()).innerHTML = curr + " \n " +entries[j][1];
-              document.getElementById(i.toString()).className = "flag-week";
+              document.getElementById(i.toString()).className = "flag";
             }
           }
-          
-            
-
       }
   }
 
   handleAdd(day :any){
-  //I can see it doing two ways, just writing it here and set stating, or making a new component, Entry, and then pushing state back up to calendar
     this.setState({addMode : true, addDate : day})
   }
 
   handleChange(e :any){
-    console.log(e.target.value)
     e.preventDefault()
     this.setState({addText : e.target.value})
   }
 
   handleEventChange(e :any){
     e.preventDefault()
-    this.props.onEventChange(this.state.addDate, this.state.addText)
+    let dom = document.getElementById("event-date").innerHTML
+    let date = moment(dom,"MM-DD-YYYY")
+    this.props.onEventChange(date, this.state.addText)
     this.showEntries(this.props.entries)
+    this.setState({addMode: false,})
   }
 
 
@@ -83,14 +87,15 @@ class Week extends React.Component<Props, State> {
     this.state.addMode ?       
     formItem = 
     <form>
-      <div id= "event-date">Adding Event for:   {this.state.addDate.format("MM-DD-YYYY")}</div>
+      <div>Adding Event for:   </div><div id= "event-date">{this.state.addDate.format("MM-DD-YYYY")}</div>
       <label>
         Event Description:
         <input id="event-text" type="text" name="event" onChange = {(e) => this.handleChange(e)} />
       </label>
       <input id="event-submit" type="submit" value="Submit" onClick={(e) => this.handleEventChange(e)}/>
     </form> :
-    <form></form>
+    <form>
+    </form>
 
     return (
       <div>

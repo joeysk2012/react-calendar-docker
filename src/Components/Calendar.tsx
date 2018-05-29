@@ -2,15 +2,16 @@ import * as moment from 'moment';
 import * as React from 'react';
 import Month from './Month';
 import Week from './Week';
-/*given a calnder in month view, create a week view, create a day entry  */
+
+/*Calendar is the parent component that controls both monthview and weekview*/
 
 interface State {
   month: string;
   date: string;
   year: number;
-  week : object[];
+  week : any;
   weekMode: boolean;
-  entries: object[];
+  entries: any;
 }
 
 class Calendar extends React.Component {
@@ -25,8 +26,8 @@ class Calendar extends React.Component {
     };
 
 
-    private handleWeekChange(week : object[]){
-        this.setState({weekMode : true, week : week})
+    private handleWeekChange(week : any){
+      this.setState({weekMode : true, week : week})
     }
 
     handleBack(){
@@ -54,22 +55,40 @@ class Calendar extends React.Component {
       this.setState({month : prev_month_name, year : prev_year })
     }
 
-    componentDidMount?(){
+    handleWeekNext(){
+        let curr_week = this.state.week;
+        let next_week = [];
+        for(let i = 0 ; i < curr_week.length ; i++){
+          next_week.push(curr_week[i].add(7, 'days')) 
+        }
+        this.setState({week : next_week})
+    }
 
+    handleWeekPrev(){
+      let curr_week = this.state.week;
+      let prev_week = [];
+      for(let i = 0 ; i < curr_week.length ; i++){
+        prev_week.push(curr_week[i].subtract(7, 'days')) 
+      }
+      this.setState({week : prev_week})
     }
   
     public render() {
-      let component = this.state.weekMode == false ? 
-        <Month name={this.state.month} year = {this.state.year} onWeekChange = {this.handleWeekChange.bind(this)} entries = {this.state.entries} /> : <Week days = {this.state.week} entries = {this.state.entries} onEventChange = {this.handleEventChange.bind(this)} />
-      let buttons = this.state.weekMode == false ?
+      let component = (this.state.weekMode == false) ? 
+        <Month name={this.state.month} year = {this.state.year} onWeekChange = {this.handleWeekChange.bind(this)} entries = {this.state.entries} /> 
+        : <Week days = {this.state.week} entries = {this.state.entries} onEventChange = {this.handleEventChange.bind(this)} />
+      let buttons = (this.state.weekMode == false) ?
         <div>
             <button id = "prev" onClick = {this.handlePrev.bind(this)}>Prev</button>
             <button id = "next" onClick = {this.handleNext.bind(this)} >Next</button>
         </div> :
         <div>
           <button id="back" onClick = {this.handleBack.bind(this)}>Month View</button>
+          <button id = "week-prev" onClick = {this.handleWeekPrev.bind(this)}>Prev</button>
+          <button id = "week-next" onClick = {this.handleWeekNext.bind(this)} >Next</button>
           <div id="add-form"></div>
-        </div>  
+        </div> 
+         
       return (
         <div>
           {buttons}

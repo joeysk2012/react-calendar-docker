@@ -1,27 +1,22 @@
 
 import * as React from 'react';
 import * as moment from 'moment';
+import './Month.css';
 
+/* Month component controls Month view*/
 
 interface Props {
   name: string;
   year : number;
   onWeekChange : Function;
-  entries : object[]
+  entries : any
 }
 
-interface State {
-  rand: number;
-}
 
-class Month extends React.Component<Props, State> {
+class Month extends React.Component<Props> {
   public static defaultProps: Partial<Props> = {
     name: "January",
     year: 2018 
-    };
-
-  public state: State = {
-    rand: 0,
   };
 
   componentDidMount?(){
@@ -33,7 +28,7 @@ class Month extends React.Component<Props, State> {
   }
   
   /* compare all entries with all days of the month, if they are equal then add a count of notes to it */
-  showEntries(entries: object[]){
+  showEntries(entries: any){
     entries = this.props.entries;
   
       for(let i = 0 ; i < 35 ; i++){
@@ -41,20 +36,24 @@ class Month extends React.Component<Props, State> {
           break;
         }
         let count = 0;
+        document.getElementById(i.toString()).classList.remove("flag");
+        let curr = document.getElementById(i.toString()).innerHTML.slice(0,2);
+        document.getElementById(i.toString()).innerHTML = curr;
         for(let j = 0 ; j < entries.length ; j++){
-          if(entries[j][0].date().toString() === document.getElementById(i.toString()).innerHTML.slice(0,2) && this.props.name === entries[j][0].format('MMMM')){
+          if((entries[j][0].date().toString() === curr) && (this.props.name === entries[j][0].format('MMMM'))){
             count += 1
           }
         }
         if(count > 0){
           let curr = document.getElementById(i.toString()).innerHTML
-          document.getElementById(i.toString()).innerHTML = curr + " e: " + count
+          document.getElementById(i.toString()).innerHTML = curr + " \n " + " e: " + count
           document.getElementById(i.toString()).className = "flag"
+          count = 0;
         }
       }
   }
 
-  handleWeekView(week: object[]){
+  handleWeekView(week: any){
     this.props.onWeekChange(week);
   }
 
@@ -77,8 +76,7 @@ class Month extends React.Component<Props, State> {
 
     for(let i = 0 ; i < 45 ; i++){
       month.push(moment(month_num + " " + year_num, "MM YYYY").day(i));
-      if((month.length >= 28) 
-        && (moment(month_num + " " + year_num, "MM YYYY").day(i).day() == 6)){
+      if((month.length >= 28) && (moment(month_num + " " + year_num, "MM YYYY").day(i).day() == 6)){
         break;
       }
     }
@@ -86,7 +84,7 @@ class Month extends React.Component<Props, State> {
     let days_of_week = moment.weekdays();
     let daysItems = days_of_week.map((day,index) => <th key={index}>{day}</th>);
     let ids = 0;
-    let listItems = month.map((week :object[], index :number, onDoubleClick :any) => 
+    let listItems = month.map((week :any, index :number, onDoubleClick :any) => 
       <tr key={index} onDoubleClick = {() => this.handleWeekView(week)}>
         {week.map((date :any, index :number)  => 
           <td key= {index} id={(ids++).toString()}>
