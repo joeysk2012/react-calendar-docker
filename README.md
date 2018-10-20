@@ -9,3 +9,4 @@ You can find the most recent version of this guide [here](https://github.com/fac
 -The workflow is as follows:
 1. Ansible will create a AWS instance with Docker/Nginx production environment.
 2. When a push happens on this repository code is automatically sent to production, through Jenkins build process, and deployed to instance
+3. Do other stuff
